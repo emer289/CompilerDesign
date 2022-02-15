@@ -25,3 +25,4 @@
 #define OPENBRACE = 21
 #define CLOSEBRACE = 22
 
+#define ENDSTATEMENT = 23
