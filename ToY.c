@@ -23,6 +23,7 @@ int main(void)
 				printf("default\n");
 		}
 		ntoken = yylex();
+		if (error == 1) break;
 	}
 	if (error == 1) printf("NOT VALID\n");
 	else printf("VALID\n");
