@@ -72,13 +72,30 @@ Identifier = [:jletter:] [:jletterdigit:]*
 ")"                            { return new Yytoken("CLOSEBRACE"); }  
 
 
-[0-9]+                    { if(Integer.valueOf(yytext())<32768){
+[+]?[0-9]+                    { String t = yytext();
+                            char s = t.charAt(0);
+                            if(s == '+'){
+                               if(Integer.valueOf(t)<32768){
                                       return new Yytoken("DIGIT");
                                     }else{
                                       return new Yytoken("ERROR");
                                     }
                                   
-                                }
+                                }else if(s == '-'){
+                              if(Integer.valueOf(t)<32769){
+                                      return new Yytoken("DIGIT");
+                                    }else{
+                                      return new Yytoken("ERROR");
+                                    }
+                            }else{
+                              if(Integer.valueOf(t)<32768){
+                                      return new Yytoken("DIGIT");
+                                    }else{
+                                      return new Yytoken("ERROR");
+                                    }
+                            }
+                            }
+                           
 
 
 {Identifier}                   { return new Yytoken("IDENTIFIER"); }

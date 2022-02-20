@@ -1063,18 +1063,8 @@ public static void main(String[] args) throws FileNotFoundException, IOException
                                       return new Yytoken("ERROR");
                                     }
                                   
-                                }else if(s == '-'){
-                              if(Integer.valueOf(t)<32769){
-                                      return new Yytoken("DIGIT");
-                                    }else{
-                                      return new Yytoken("ERROR");
-                                    }
-                            }else{
-                              if(Integer.valueOf(t)<32768){
-                                      return new Yytoken("DIGIT");
-                                    }else{
-                                      return new Yytoken("ERROR");
-                                    }
+                                }else{
+                              return new Yytoken("ERROR");
                             }
             }
             // fall through
