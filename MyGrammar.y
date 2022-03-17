@@ -31,7 +31,7 @@ CLOSECURLY OPENBRACE CLOSEBRACE IDENTIFIER STRING_LITERAL COMMENT
 %%
 
 exp:
-    NUM              {$$ = $1; System.out.println("$1 is " + $1);}
+    NUM              {$$ = $1; System.out.println($1);}
     | exp PLUS exp   {$$ = $1 + $3;}
     ;
 
