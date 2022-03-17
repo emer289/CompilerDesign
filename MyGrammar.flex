@@ -6,7 +6,7 @@ import java.lang.*;
 %line
 %column
 
-Num = [+-]?[0-9]+
+Num = [0-9]+
 
 LineTerminator = \r|\n|\r\n
 InputCharacter = [^\r\n]
@@ -55,6 +55,7 @@ UNKNOWN_TOKEN = .
                                                     char s = t.charAt(0);
                                                     if(s == '+'){
                                                        if(Integer.valueOf(t)<32768){
+                                                             System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]");
                                                               return MyGrammarLexer.NUM;
                                                             }else{
                                                               return MyGrammarLexer.UNKNOWN_TOKEN;
@@ -62,12 +63,14 @@ UNKNOWN_TOKEN = .
 
                                                         }else if(s == '-'){
                                                       if(Integer.valueOf(t)<32769){
+                                                              System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]");
                                                               return MyGrammarLexer.NUM;
                                                             }else{
                                                               return MyGrammarLexer.UNKNOWN_TOKEN;
                                                             }
                                                     }else{
                                                       if(Integer.valueOf(t)<32768){
+                                                              System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]");
                                                               return MyGrammarLexer.NUM;
                                                             }else{
                                                               return MyGrammarLexer.UNKNOWN_TOKEN;

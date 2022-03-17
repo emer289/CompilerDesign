@@ -8,6 +8,7 @@
   import java.io.InputStreamReader;
   import java.io.Reader;
   import java.io.IOException;
+  import java.io.*;
 }
 
 %code {
@@ -23,22 +24,17 @@
 %token UNKNOWN_TOKEN EQ PLUS MINUS MUL DIV MOD
 AND OR NOT INT VOID PRINTF STRING STRUCT IF THEN
 ELSE FOR RETURN BOOL TRUE FALSE ENDSTATEMENT OPENCURLY
-CLOSECURLY OPENBRACE CLOSEBRACE NUM IDENTIFIER STRING_LITERAL COMMENT
+CLOSECURLY OPENBRACE CLOSEBRACE IDENTIFIER STRING_LITERAL COMMENT
+%token <Integer> NUM
+%type <Integer> exp
 
 %%
 
-prog:
-  srule
-;
+exp:
+    NUM              {$$ = $1; System.out.println("$1 is " + $1);}
+    | exp PLUS exp   {$$ = $1 + $3;}
+    ;
 
-srule   
-    : EQ srule PLUS
-    | EQ PLUS MINUS MUL DIV MOD AND OR NOT INT VOID PRINTF STRING STRUCT IF THEN ELSE FOR RETURN BOOL TRUE FALSE ENDSTATEMENT OPENCURLY CLOSECURLY OPENBRACE CLOSEBRACE
-    | NUM
-    | IDENTIFIER
-    | STRING_LITERAL
-    | COMMENT
-;
 
 %%
 
