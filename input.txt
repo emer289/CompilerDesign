@@ -1,0 +1,6 @@
+   int B;
+   B = 1;
+   print B;
+   String C;
+   C = 5;
+   print C;

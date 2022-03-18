@@ -1,43 +1,21 @@
-
 %{
-	#include "ToY.h"
+#include "y.tab.h"
+void yyerror (char *s);
+int yylex();
 %}
+%%
+"int"		           {printf("token is int\n"); return INT;}
+"String"		       {printf("token is String\n"); return STRING;}
+"print"				   {printf("token is print\n"); return print;}
+[a-zA-Z]			   {yylval.id = yytext[0]; printf("token is id\n"); return identifier;}
+[0-9]+                 {yylval.num = atoi(yytext); printf("token is num\n"); return number;}
+[ \t\n]                ;
+[-+=;]           	   {return yytext[0];}
 
+\"([^\\].)*\"	       {printf("token is Strlit\n"); return STRLIT;}
+
+.                      {ECHO; yyerror ("unexpected character");}
 
 %%
+int yywrap (void) {return 1;}
 
-int		return INTEGER;
-void		return VOID;
-printf		return PRINTF;
-string		return STRING;
-struct		return STRUCT;
-if		return IF;
-then		return THEN;
-else		return ELSE;
-for		return FOR;
-return 	return RETURN;
-bool		return BOOL;
-true		return TRUELIT;
-false		return FALSELIT;
-";"		return ENDSTATEMENT;
-"+"|"-"|"*"|"/"|mod|and|or|not	return ARITHOP;
-">"|"<"|">="|"<="|"=="|"!="	return COMPARE;
-"{"		return OPENCURLY;
-"}"		return CLOSECURLY;
-"("		return OPENBRACE;
-")"		return CLOSEBRACE;
-"="		return ASSIGN;
-
-\"([^\\].)*\"	return STRLIT;
-"//".*[\n]	return COMMENT;
-[a-zA-Z][_a-zA-Z0-9]* 	return IDENTIFIER;
-[+-]?[1-9][0-9]*	return INTLIT;
-[ \t\n]+	;
-.		printf("ERROR\n");
-
-%%
-
-int yywrap(void)
-{
-	return 1; 
-}
