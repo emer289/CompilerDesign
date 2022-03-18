@@ -1,83 +1,106 @@
 %{
-void yyerror (char *s);
-int yylex();
-#include <stdio.h>     /* C declarations used in actions */
-#include <stdlib.h>
-#include <ctype.h>
-int symbols[52];
-int symbolVal(char symbol);
-void updateSymbolVal(char symbol, int val);
+	#include "ToY.c"
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <string.h>
+	extern FILE *yyin;
+	extern FILE *yyout;
+	extern int lineno;
+	extern int yylex();
+	void yyerror();
 %}
 
-%union {int num; char id;}         /* Yacc definitions */
-%start line
-%token print INT STRING STRLIT
-%token <num> number
-%token <id> identifier
-%type <num> line exp
-%type <id> assignment
+/* YYSTYPE union */
+%union{
+    char char_val;
+	int int_val;
+	double double_val;
+	char* str_val;
+	list_t* ToY_item;
+}
+
+/* token definition */
+%token<int_val> INT IF ELSE STRING
+%token<int_val> INCR
+%token<int_val> LPAREN RPAREN LBRACE RBRACE SEMI ASSIGN
+%token <ToY_item>   ID
+%token <int_val>    ICONST
+%token <str_val>    STRING_LIT
+
+/* precedencies and associativities */
+%left LPAREN RPAREN
+%right ASSIGN INCR
+
+
+%start program
+
+/* expression rules */
 
 %%
 
-/* descriptions of expected inputs     corresponding actions (in C) */
-
-
-line    : init 		            {;}
-        | init assignment ';'		{;}
-        | line init assignment ';'		{;}
-		| print exp ';'			{printf("Printing %d\n", $2);}
-		| line assignment ';'	{;}
-		| line print exp ';'	{printf("Printing %d\n", $3);}
+program:  declarations  statements
         ;
 
-init : type_specifier identifier ';'
+/* declarations */
+declarations: declarations declaration | declaration;
 
-type_specifier:
-    INT
-    | STRING
-    ;
 
-assignment : identifier '=' exp  { updateSymbolVal($1,$3); }
-			;
-exp    	: number                {$$ = $1;}
-        | identifier			{$$ = symbolVal($1);}
-        ;
+declaration: INT names SEMI int_init
+            | STRING names SEMI str_init;
 
-%%                     /* C code */
+type: INT ;
 
-int computeSymbolIndex(char token)
+names: ID ;
+
+int_init : ID ASSIGN ICONST SEMI
+str_init : ID ASSIGN STRING_LIT SEMI
+
+/* statements */
+statements: statements statement | statement ;
+
+statement:
+	if_statement | ID INCR SEMI
+;
+
+if_statement:
+	IF LPAREN RPAREN tail optional_else
+;
+
+optional_else: ELSE tail | /* empty */ ;
+
+tail: LBRACE statements RBRACE ;
+
+
+constant: ICONST  ;
+
+
+
+
+%%
+
+void yyerror ()
 {
-	int idx = -1;
-	if(islower(token)) {
-		idx = token - 'a' + 26;
-	} else if(isupper(token)) {
-		idx = token - 'A';
-	}
-	return idx;
+  fprintf(stderr, "Syntax error at line %d\n", lineno);
+  exit(1);
 }
 
-/* returns the value of a given symbol */
-int symbolVal(char symbol)
-{
-	int bucket = computeSymbolIndex(symbol);
-	return symbols[bucket];
+int main (int argc, char *argv[]){
+
+	// initialize symbol table
+	init_hash_table();
+
+	// parsing
+	int flag;
+	yyin = fopen(argv[1], "r");
+	flag = yyparse();
+	fclose(yyin);
+
+	printf("Parsing finished!");
+
+	// symbol table dump
+	yyout = fopen("ToY_dump.out", "w");
+	ToY_dump(yyout);
+	fclose(yyout);
+
+	return flag;
 }
-
-/* updates the value of a given symbol */
-void updateSymbolVal(char symbol, int val)
-{
-	int bucket = computeSymbolIndex(symbol);
-	symbols[bucket] = val;
-}
-
-int main (void) {
-	/* init symbol table */
-	int i;
-	for(i=0; i<52; i++) {
-		symbols[i] = 0;
-	}
-
-	return yyparse ( );
-}
-
-void yyerror (char *s) {fprintf (stderr, "%s\n", s);}

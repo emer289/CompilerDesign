@@ -1,6 +1,9 @@
-   int B;
-   B = 1;
-   print B;
-   String C;
-   C = 5;
-   print C;
+int val;
+val = 5;
+string hello;
+hello = "hello";
+if(){
+    val++;
+}else{
+    val--;
+}
