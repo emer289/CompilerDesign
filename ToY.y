@@ -21,7 +21,7 @@
 
 /* token definition */
 %token<int_val> INT IF ELSE STRING
-%token<int_val> INCR LS_GR EQU_NOTEQU OR AND NOT
+%token<int_val> INCR LS_GR EQU_NOTEQU OR AND NOT ADD SUB MUL DIV
 %token<int_val> LPAREN RPAREN LBRACE RBRACE SEMI ASSIGN
 %token <ToY_item>   ID
 %token <int_val>    ICONST
@@ -30,7 +30,7 @@
 /* precedencies and associativities */
 %left LPAREN RPAREN
 %right ASSIGN INCR NOT
-%left LS_GR EQU_NOTEQU OR AND
+%left LS_GR EQU_NOTEQU OR AND ADD SUB MUL DIV
 
 
 %start program
@@ -73,18 +73,20 @@ optional_else: ELSE tail | /* empty */ ;
 tail: LBRACE statements RBRACE ;
 
 expression:
-        LPAREN expression RPAREN
-        | expression AND expression
-        | expression AND crule
-        | expression compare expression
-        | values
+        expression AND expression
         | crule
+        | LPAREN expression RPAREN
         ;
+brule:
+      values compare values
+      ;
 
-crule
-    :
-    | LPAREN values OR values RPAREN
+crule:
+    | brule
+    | brule OR brule
     ;
+
+
 
 compare: LS_GR
        | EQU_NOTEQU
@@ -96,7 +98,7 @@ compare: LS_GR
 
 void yyerror ()
 {
-  fprintf(stderr, "Syntax error at line %d\n", lineno);
+  fprintf(stderr, "Error %d\n", lineno);
   exit(1);
 }
 
@@ -111,7 +113,7 @@ int main (int argc, char *argv[]){
 	flag = yyparse();
 	fclose(yyin);
 
-	printf("Parsing finished!");
+	printf("VAlID!");
 
 	// symbol table dump
 	yyout = fopen("ToY_dump.out", "w");

@@ -40,9 +40,11 @@ STRING_LIT    \"{print}*\"
 ">"|"<"|">="|"<="   { return LS_GR; }
 "=="|"!="           { return EQU_NOTEQU; }
 
-"|"                { return OR; }
-"&"                { return AND; }
-"!"                 { return NOT; }
+
+
+"or"                { return OR; }
+"and"                { return AND; }
+"not"                 { return NOT; }
 
 
 
