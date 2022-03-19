@@ -35,6 +35,8 @@ STRING_LIT    \"{print}*\"
 "if"|"IF"             { return IF; }
 "else"|"ELSE"         { return ELSE; }
 "string"              { return STRING; }
+"true"                { return TRUE; }
+"false"                { return FALSE; }
 
 "++"|"--"           { return INCR; }
 ">"|"<"|">="|"<="   { return LS_GR; }

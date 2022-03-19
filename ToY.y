@@ -22,7 +22,7 @@
 /* token definition */
 %token<int_val> INT IF ELSE STRING
 %token<int_val> INCR LS_GR EQU_NOTEQU OR AND NOT ADD SUB MUL DIV
-%token<int_val> LPAREN RPAREN LBRACE RBRACE SEMI ASSIGN
+%token<int_val> LPAREN RPAREN LBRACE RBRACE SEMI ASSIGN TRUE FALSE
 %token <ToY_item>   ID
 %token <int_val>    ICONST
 %token <str_val>    STRING_LIT
@@ -75,26 +75,34 @@ statement:
 ;
 
 if_statement:
-	IF LPAREN expression RPAREN tail optional_else
+	IF LPAREN arule RPAREN tail optional_else
 ;
 
 optional_else: ELSE tail | /* empty */ ;
 
 tail: LBRACE statements RBRACE ;
 
-expression:
-        expression AND expression
-        | crule
-        | LPAREN expression RPAREN
-        ;
-brule:
-      values compare values
+arule: NOT expression
+      | LPAREN arule RPAREN
+      | expression
       ;
 
+expression:
+        arule AND arule
+        | crule
+        ;
 crule:
     | brule
-    | brule OR brule
+    | brule OR arule
     ;
+
+brule:
+      values compare values
+      |TRUE
+      |FALSE
+      ;
+
+
 
 
 
