@@ -37,6 +37,13 @@ STRING_LIT    \"{print}*\"
 "string"              { return STRING; }
 
 "++"|"--"           { return INCR; }
+">"|"<"|">="|"<="   { return LS_GR; }
+"=="|"!="           { return EQU_NOTEQU; }
+
+"|"                { return OR; }
+"&"                { return AND; }
+"!"                 { return NOT; }
+
 
 
 "("       { return LPAREN; }

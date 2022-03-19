@@ -2,7 +2,7 @@ int val;
 val = 5;
 string hello;
 hello = "hello";
-if(){
+if((val < 3) & (val > 5)){
     val++;
 }else{
     val--;

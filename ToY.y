@@ -21,7 +21,7 @@
 
 /* token definition */
 %token<int_val> INT IF ELSE STRING
-%token<int_val> INCR
+%token<int_val> INCR LS_GR EQU_NOTEQU OR AND NOT
 %token<int_val> LPAREN RPAREN LBRACE RBRACE SEMI ASSIGN
 %token <ToY_item>   ID
 %token <int_val>    ICONST
@@ -29,7 +29,8 @@
 
 /* precedencies and associativities */
 %left LPAREN RPAREN
-%right ASSIGN INCR
+%right ASSIGN INCR NOT
+%left LS_GR EQU_NOTEQU OR AND
 
 
 %start program
@@ -45,15 +46,16 @@ program:  declarations  statements
 declarations: declarations declaration | declaration;
 
 
-declaration: INT names SEMI int_init
-            | STRING names SEMI str_init;
+declaration: INT ID SEMI int_init
+            | STRING ID SEMI str_init;
 
-type: INT ;
-
-names: ID ;
 
 int_init : ID ASSIGN ICONST SEMI
 str_init : ID ASSIGN STRING_LIT SEMI
+
+values: ID
+    | ICONST
+    ;
 
 /* statements */
 statements: statements statement | statement ;
@@ -63,16 +65,30 @@ statement:
 ;
 
 if_statement:
-	IF LPAREN RPAREN tail optional_else
+	IF LPAREN expression RPAREN tail optional_else
 ;
 
 optional_else: ELSE tail | /* empty */ ;
 
 tail: LBRACE statements RBRACE ;
 
+expression:
+        LPAREN expression RPAREN
+        | expression AND expression
+        | expression AND crule
+        | expression compare expression
+        | values
+        | crule
+        ;
 
-constant: ICONST  ;
+crule
+    :
+    | LPAREN values OR values RPAREN
+    ;
 
+compare: LS_GR
+       | EQU_NOTEQU
+       ;
 
 
 
