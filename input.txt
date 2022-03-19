@@ -7,3 +7,6 @@ if((val > 5) and (not true)){
 }else{
     val--;
 }
+for ( val = 1; val > 5; val++ ){
+    val++;
+}

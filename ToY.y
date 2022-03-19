@@ -20,7 +20,7 @@
 }
 
 /* token definition */
-%token<int_val> INT IF ELSE STRING
+%token<int_val> INT IF ELSE STRING FOR
 %token<int_val> INCR LS_GR EQU_NOTEQU OR AND NOT ADD SUB MUL DIV
 %token<int_val> LPAREN RPAREN LBRACE RBRACE SEMI ASSIGN TRUE FALSE
 %token <ToY_item>   ID
@@ -71,8 +71,12 @@ values: ID
 statements: statements statement | statement ;
 
 statement:
-	if_statement | ID INCR SEMI
+	if_statement | for_statement
 ;
+
+incr:
+    ID INCR SEMI
+    ;
 
 if_statement:
 	IF LPAREN arule RPAREN tail optional_else
@@ -80,7 +84,12 @@ if_statement:
 
 optional_else: ELSE tail | /* empty */ ;
 
-tail: LBRACE statements RBRACE ;
+tail: LBRACE statements RBRACE
+    | LBRACE incr RBRACE ;
+
+for_statement:
+    FOR LPAREN int_init arule SEMI ID INCR RPAREN tail
+    ;
 
 arule: NOT expression
       | LPAREN arule RPAREN

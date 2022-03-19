@@ -31,12 +31,14 @@ STRING_LIT    \"{print}*\"
 "//".*        { printf("Eat up comment at line %d\n", lineno); }
 
 
+"for"                 { return FOR; }
 "int"|"INT"           { return INT; }
 "if"|"IF"             { return IF; }
 "else"|"ELSE"         { return ELSE; }
 "string"              { return STRING; }
 "true"                { return TRUE; }
 "false"                { return FALSE; }
+
 
 "++"|"--"           { return INCR; }
 ">"|"<"|">="|"<="   { return LS_GR; }
