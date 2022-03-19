@@ -20,7 +20,7 @@
 }
 
 /* token definition */
-%token<int_val> INT IF ELSE STRING FOR BOOL VOID RETURN COMMA
+%token<int_val> INT IF ELSE STRING FOR BOOL VOID RETURN COMMA STRUCT
 %token<int_val> INCR LS_GR EQU_NOTEQU OR AND NOT ADD SUB MUL DIV
 %token<int_val> LPAREN RPAREN LBRACE RBRACE SEMI ASSIGN TRUE FALSE
 %token <ToY_item>   ID
@@ -39,7 +39,7 @@
 
 %%
 
-program:  declarations  statements functions_optional
+program:  declarations  statements struct_optional functions_optional
         ;
 
 /* declarations */
@@ -122,6 +122,11 @@ compare: LS_GR
        | EQU_NOTEQU
        ;
 
+struct_optional: structs | /* empty */ ;
+
+structs: structs | struct ;
+
+struct: STRUCT ID LBRACE RBRACE
 
 /* functions */
 functions_optional: functions | /* empty */ ;
@@ -140,7 +145,13 @@ parameters: parameters COMMA parameter | parameter ;
 
 parameter : type ID ;
 
-function_tail: LBRACE RBRACE ;
+function_tail: LBRACE declarations_optional statements_optional return_optional RBRACE ;
+
+declarations_optional: declarations | /* empty */ ;
+
+statements_optional: statements | /* empty */ ;
+
+return_optional: RETURN SEMI | /* empty */ ;
 
 %%
 

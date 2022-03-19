@@ -41,6 +41,7 @@ STRING_LIT    \"{print}*\"
 "bool"                { return BOOL; }
 "void"                { return VOID; }
 "return"              { return RETURN; }
+"struct"              { return STRUCT;}
 
 
 "++"|"--"           { return INCR; }
