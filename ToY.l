@@ -39,6 +39,8 @@ STRING_LIT    \"{print}*\"
 "true"                { return TRUE; }
 "false"               { return FALSE; }
 "bool"                { return BOOL; }
+"void"                { return VOID; }
+"return"              { return RETURN; }
 
 
 "++"|"--"           { return INCR; }
@@ -62,6 +64,7 @@ STRING_LIT    \"{print}*\"
 "}"       { return RBRACE; }
 ";"       { return SEMI; }
 "="       { return ASSIGN; }
+","       { return COMMA; }
 
 
 {ID}    {

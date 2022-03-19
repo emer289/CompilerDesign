@@ -20,7 +20,7 @@
 }
 
 /* token definition */
-%token<int_val> INT IF ELSE STRING FOR BOOL
+%token<int_val> INT IF ELSE STRING FOR BOOL VOID RETURN COMMA
 %token<int_val> INCR LS_GR EQU_NOTEQU OR AND NOT ADD SUB MUL DIV
 %token<int_val> LPAREN RPAREN LBRACE RBRACE SEMI ASSIGN TRUE FALSE
 %token <ToY_item>   ID
@@ -39,7 +39,7 @@
 
 %%
 
-program:  declarations  statements
+program:  declarations  statements functions_optional
         ;
 
 /* declarations */
@@ -123,6 +123,24 @@ compare: LS_GR
        ;
 
 
+/* functions */
+functions_optional: functions | /* empty */ ;
+
+functions: functions function | function ;
+
+function: function_head function_tail ;
+
+function_head: type ID LPAREN parameters_optional RPAREN
+
+type: INT | STRING | BOOL | VOID;
+
+parameters_optional: parameters | /* empty */ ;
+
+parameters: parameters COMMA parameter | parameter ;
+
+parameter : type ID ;
+
+function_tail: LBRACE RBRACE ;
 
 %%
 

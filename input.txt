@@ -12,3 +12,4 @@ if((val > 5) and (not true)){
 for ( val = 1; val > 5; val++ ){
     val++;
 }
+int func(int num){}
