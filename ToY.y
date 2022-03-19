@@ -20,7 +20,7 @@
 }
 
 /* token definition */
-%token<int_val> INT IF ELSE STRING FOR
+%token<int_val> INT IF ELSE STRING FOR BOOL
 %token<int_val> INCR LS_GR EQU_NOTEQU OR AND NOT ADD SUB MUL DIV
 %token<int_val> LPAREN RPAREN LBRACE RBRACE SEMI ASSIGN TRUE FALSE
 %token <ToY_item>   ID
@@ -47,11 +47,14 @@ declarations: declarations declaration | declaration;
 
 
 declaration: INT ID SEMI int_init
-            | STRING ID SEMI str_init;
+            | STRING ID SEMI str_init
+            | BOOL ID SEMI bool_init
+            ;
 
 
 int_init : ID ASSIGN exp SEMI ;
 str_init : ID ASSIGN STRING_LIT SEMI ;
+bool_init : ID ASSIGN arule SEMI ;
 
 exp: values
     | exp aritmetic_op values

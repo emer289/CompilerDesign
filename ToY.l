@@ -37,7 +37,8 @@ STRING_LIT    \"{print}*\"
 "else"|"ELSE"         { return ELSE; }
 "string"              { return STRING; }
 "true"                { return TRUE; }
-"false"                { return FALSE; }
+"false"               { return FALSE; }
+"bool"                { return BOOL; }
 
 
 "++"|"--"           { return INCR; }

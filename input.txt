@@ -2,6 +2,8 @@ int val;
 val = 5+1;
 string hello;
 hello = "hello";
+bool istrue;
+istrue = true;
 if((val > 5) and (not true)){
     val++;
 }else{
