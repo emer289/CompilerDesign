@@ -1,5 +1,5 @@
 int val;
-val = 5;
+val = 5+1;
 string hello;
 hello = "hello";
 if((val > 5) and (val > 5)){

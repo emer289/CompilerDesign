@@ -50,8 +50,18 @@ declaration: INT ID SEMI int_init
             | STRING ID SEMI str_init;
 
 
-int_init : ID ASSIGN ICONST SEMI
-str_init : ID ASSIGN STRING_LIT SEMI
+int_init : ID ASSIGN exp SEMI ;
+str_init : ID ASSIGN STRING_LIT SEMI ;
+
+exp: values
+    | exp aritmetic_op values
+    ;
+
+aritmetic_op: ADD
+            | SUB
+            | MUL
+            | DIV
+            ;
 
 values: ID
     | ICONST
