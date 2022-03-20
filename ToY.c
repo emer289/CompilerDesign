@@ -27,6 +27,7 @@ void insert(char *name, int len, int type, int lineno){
 
 	/* variable not yet in table */
 	if (l == NULL){
+		if (type == 0) printf("here\n");
 		l = (list_t*) malloc(sizeof(list_t));
 		strncpy(l->st_name, name, len);
 		/* add to hashtable */

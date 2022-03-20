@@ -39,22 +39,22 @@
 
 %%
 
-program:  declarations  statements struct_optional functions_optional
+program: statements struct_optional functions_optional
         ;
 
 /* declarations */
 declarations: declarations declaration | declaration;
 
 
-declaration: INT ID SEMI int_init
-            | STRING ID SEMI str_init
-            | BOOL ID SEMI bool_init
-            ;
-
-
-int_init : ID ASSIGN exp SEMI ;
-str_init : ID ASSIGN STRING_LIT SEMI ;
-bool_init : ID ASSIGN arule SEMI ;
+declaration: INT ID SEMI
+            | STRING ID SEMI
+            | BOOL ID SEMI ;
+	    
+initialisations: initialisations initialisation | initialisation;
+	    
+initialisation: ID ASSIGN exp SEMI
+	| ID ASSIGN STRING_LIT SEMI
+	| ID ASSIGN brule SEMI ;
 
 exp: values
     | exp aritmetic_op values
@@ -74,7 +74,7 @@ values: ID
 statements: statements statement | statement ;
 
 statement:
-	if_statement | for_statement
+	if_statement | for_statement | initialisations | declarations
 ;
 
 incr:
@@ -91,7 +91,7 @@ tail: LBRACE statements RBRACE
     | LBRACE incr RBRACE ;
 
 for_statement:
-    FOR LPAREN int_init arule SEMI ID INCR RPAREN tail
+    FOR LPAREN initialisation arule SEMI ID INCR RPAREN tail
     ;
 
 arule: NOT expression
@@ -172,7 +172,7 @@ int main (int argc, char *argv[]){
 	flag = yyparse();
 	fclose(yyin);
 
-	printf("VAlID!");
+	printf("VAlID!\n");
 
 	// symbol table dump
 	yyout = fopen("ToY_dump.out", "w");

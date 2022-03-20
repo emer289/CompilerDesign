@@ -1,6 +1,7 @@
+invalidValue = 15;
 int val;
-val = 5;
 string hello;
+val = 5;
 hello = "hello";
 bool istrue;
 istrue = true;
