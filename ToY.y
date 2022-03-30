@@ -165,9 +165,9 @@ function_head: type ID LPAREN parameters_optional RPAREN {
 
 function_tail: LBRACE declarations_optional statements_optional return_mandatory RBRACE {$$=$4;};
 
-vfunction_head: VOID ID LPAREN parameters_optional return_optional RPAREN
+vfunction_head: VOID ID LPAREN parameters_optional RPAREN
 
-vfunction_tail: LBRACE declarations_optional statements_optional RBRACE;
+vfunction_tail: LBRACE declarations_optional statements_optional return_optional RBRACE;
 
 type: INT {$$=INT;} | STRING {$$=STRING;} | BOOL {$$=BOOL;} ;
 

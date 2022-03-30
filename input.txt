@@ -1,11 +1,11 @@
-invalidValue = 15;
+//invalidValue = 15;
 int val;
 string hello;
 val = 5;
 hello = "hello";
 bool istrue;
 istrue = true;
-if((val > 5) and (not true)){
+if((val > 5) and (! true)){
     val++;
 }
 for ( val = 1; val > 5; val++ ){
@@ -15,18 +15,26 @@ struct Name {
 
 }
 int func(int num){
-    int val;
-    val = 5+1;
-    string hello;
+    int ival;
+    ival = 5+1;
+    
+    string ihello;
     hello = "hello";
-    bool istrue;
-    istrue = true;
-    if((val > 5) and (not true)){
-        val++;
+    
+    bool istrueagain;
+    istrueagain = true;
+    
+    if((ival > 5) and (!true)){
+        ival++;
     }else{
-        val--;
+        ival--;
     }
 
-    return ;
+    return ival;
 }
 
+void func(int num){
+  int someval;
+  someval = 100;
+  return ;
+}
