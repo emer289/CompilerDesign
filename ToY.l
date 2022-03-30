@@ -42,9 +42,11 @@ STRING_LIT    \"{print}*\"
 "void"                { return VOID; }
 "return"              { return RETURN; }
 "struct"              { return STRUCT;}
+"mod"                 { return MOD;}
 
 
 "++"|"--"           { return INCR; }
+"!"                 { return NOT; }
 ">"|"<"|">="|"<="   { return LS_GR; }
 "=="|"!="           { return EQU_NOTEQU; }
 
@@ -55,7 +57,6 @@ STRING_LIT    \"{print}*\"
 
 "or"                { return OR; }
 "and"                { return AND; }
-"not"                 { return NOT; }
 
 
 

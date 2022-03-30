@@ -20,12 +20,19 @@
 }
 
 /* token definition */
-%token<int_val> INT IF ELSE STRING FOR BOOL VOID RETURN COMMA STRUCT
-%token<int_val> INCR LS_GR EQU_NOTEQU OR AND NOT ADD SUB MUL DIV
-%token<int_val> LPAREN RPAREN LBRACE RBRACE SEMI ASSIGN TRUE FALSE
+%token <int_val> INT IF ELSE STRING FOR BOOL VOID RETURN COMMA STRUCT
+%token <int_val> INCR LS_GR EQU_NOTEQU OR AND NOT ADD SUB MUL DIV MOD
+%token <int_val> LPAREN RPAREN LBRACE RBRACE SEMI ASSIGN TRUE FALSE
 %token <ToY_item>   ID
 %token <int_val>    ICONST
 %token <str_val>    STRING_LIT
+
+%type <int_val> type
+%type <int_val> function_head
+%type <int_val> function_tail
+%type <int_val> return_mandatory
+
+
 
 /* precedencies and associativities */
 %left LPAREN RPAREN
@@ -46,15 +53,31 @@ program: statements struct_optional functions_optional
 declarations: declarations declaration | declaration;
 
 
-declaration: INT ID SEMI
-            | STRING ID SEMI
-            | BOOL ID SEMI ;
+declaration: INT ID SEMI      {
+                if ($2->st_type != UNDEF) yyerror(1);
+                $2->st_type = INT;
+              }
+            | STRING ID SEMI  {
+                if ($2->st_type != UNDEF) yyerror(1);
+                $2->st_type = STRING;
+              }
+            | BOOL ID SEMI    {
+                if ($2->st_type != UNDEF) yyerror(1);
+                $2->st_type = BOOL;
+              }
+            ;
 	    
 initialisations: initialisations initialisation | initialisation;
 	    
-initialisation: ID ASSIGN exp SEMI
-	| ID ASSIGN STRING_LIT SEMI
-	| ID ASSIGN brule SEMI ;
+initialisation: ID ASSIGN exp SEMI {
+      if ($1->st_type != INT) yyerror(1);
+    }
+	| ID ASSIGN STRING_LIT SEMI {
+      if ($1->st_type != STRING) yyerror(1);
+    }
+	| ID ASSIGN brule SEMI  {
+      if ($1->st_type != BOOL) yyerror(1);
+    };
 
 exp: values
     | exp aritmetic_op values
@@ -133,11 +156,20 @@ functions_optional: functions | /* empty */ ;
 
 functions: functions function | function ;
 
-function: function_head function_tail ;
+function: function_head function_tail { if ($1 != $2) yyerror(1); }
+  | vfunction_head vfunction_tail ;
 
-function_head: type ID LPAREN parameters_optional RPAREN
+function_head: type ID LPAREN parameters_optional RPAREN {
+  $$=$1;
+}
 
-type: INT | STRING | BOOL | VOID;
+function_tail: LBRACE declarations_optional statements_optional return_mandatory RBRACE {$$=$4;};
+
+vfunction_head: VOID ID LPAREN parameters_optional return_optional RPAREN
+
+vfunction_tail: LBRACE declarations_optional statements_optional RBRACE;
+
+type: INT {$$=INT;} | STRING {$$=STRING;} | BOOL {$$=BOOL;} ;
 
 parameters_optional: parameters | /* empty */ ;
 
@@ -145,13 +177,13 @@ parameters: parameters COMMA parameter | parameter ;
 
 parameter : type ID ;
 
-function_tail: LBRACE declarations_optional statements_optional return_optional RBRACE ;
-
 declarations_optional: declarations | /* empty */ ;
 
 statements_optional: statements | /* empty */ ;
 
-return_optional: RETURN SEMI | /* empty */ ;
+return_optional: RETURN SEMI | ;
+
+return_mandatory: RETURN ID SEMI {$$=$2->st_type;};
 
 %%
 
