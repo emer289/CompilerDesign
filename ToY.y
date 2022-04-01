@@ -54,15 +54,15 @@ declarations: declarations declaration | declaration;
 
 
 declaration: INT ID SEMI      {
-                if ($2->st_type != UNDEF) yyerror(1);
+                if ($2->st_type != UNDEF) yyerror(lineno);
                 $2->st_type = INT;
               }
             | STRING ID SEMI  {
-                if ($2->st_type != UNDEF) yyerror(1);
+                if ($2->st_type != UNDEF) yyerror(lineno);
                 $2->st_type = STRING;
               }
             | BOOL ID SEMI    {
-                if ($2->st_type != UNDEF) yyerror(1);
+                if ($2->st_type != UNDEF) yyerror(lineno);
                 $2->st_type = BOOL;
               }
             ;
@@ -70,13 +70,13 @@ declaration: INT ID SEMI      {
 initialisations: initialisations initialisation | initialisation;
 	    
 initialisation: ID ASSIGN exp SEMI {
-      if ($1->st_type != INT) yyerror(1);
+      if ($1->st_type != INT) yyerror(lineno);
     }
 	| ID ASSIGN STRING_LIT SEMI {
-      if ($1->st_type != STRING) yyerror(1);
+      if ($1->st_type != STRING) yyerror(lineno);
     }
 	| ID ASSIGN brule SEMI  {
-      if ($1->st_type != BOOL) yyerror(1);
+      if ($1->st_type != BOOL) yyerror(lineno);
     };
 
 exp: values
@@ -89,7 +89,7 @@ aritmetic_op: ADD
             | DIV
             ;
 
-values: ID
+values: ID { if ($1->st_type != INT) yyerror(lineno); }
     | ICONST
     ;
 
@@ -156,16 +156,16 @@ functions_optional: functions | /* empty */ ;
 
 functions: functions function | function ;
 
-function: function_head function_tail { if ($1 != $2) yyerror(1); }
+function: function_head function_tail { if ($1 != $2) yyerror(lineno); }
   | vfunction_head vfunction_tail ;
 
 function_head: type ID LPAREN parameters_optional RPAREN {
   $$=$1;
-}
+};
 
 function_tail: LBRACE declarations_optional statements_optional return_mandatory RBRACE {$$=$4;};
 
-vfunction_head: VOID ID LPAREN parameters_optional RPAREN
+vfunction_head: VOID ID LPAREN parameters_optional RPAREN ;
 
 vfunction_tail: LBRACE declarations_optional statements_optional return_optional RBRACE;
 
