@@ -115,6 +115,7 @@ tail: LBRACE tail_options RBRACE ;
 tail_options: print_optional tail_options
         | statements tail_options
         | incr tail_options
+        | function_call tail_options
         | /* empty */ ;
 
 for_statement:
@@ -154,6 +155,10 @@ struct_optional: structs | /* empty */ ;
 structs: structs | struct ;
 
 struct: STRUCT ID LBRACE RBRACE
+
+
+function_call: ID LPAREN ID RPAREN SEMI;
+
 
 
 /* functions */

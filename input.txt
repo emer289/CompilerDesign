@@ -1,20 +1,27 @@
+printf(true);
 //invalidValue = 15;
 int val;
 string hello;
 val = 5;
-hello = "hello";
+hello = "hell$o";
 bool istrue;
 istrue = true;
 if((val > 5) and (! true)){
+    func(val);
     val++;
+    printf("hello");
+
 }
 for ( val = 1; val > 5; val++ ){
     val++;
+    func(val);
 }
 struct Name {
 
 }
 int func(int num){
+
+    printf("hello");
     int ival;
     ival = 5+1;
     
@@ -26,15 +33,16 @@ int func(int num){
     
     if((ival > 5) and (!true)){
         ival++;
+        funct(val);
     }else{
         ival--;
     }
-
     return ival;
 }
 
-void func(int num){
+void funct(int num){
   int someval;
   someval = 100;
+  printf("hello");
   return ;
 }
