@@ -24,7 +24,7 @@ print     [ -~]
 ID        {alpha}+{alnum}*
 ICONST    "0"|[0-9]{digit}*
 FCONST    "0"|{digit}*"."{digit}+
-STRING_LIT    \"{print}*\"
+STRING_LIT    \"([^"\\])*\"
 
 %%
 
