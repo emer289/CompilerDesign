@@ -154,7 +154,8 @@ struct_optional: structs | /* empty */ ;
 
 structs: structs | struct ;
 
-struct: STRUCT ID LBRACE RBRACE
+struct: STRUCT ID LBRACE declarations RBRACE
+
 
 
 function_call: ID LPAREN ID RPAREN SEMI;
