@@ -43,6 +43,7 @@ STRING_LIT    \"([^"\\])*\"
 "return"              { return RETURN; }
 "struct"              { return STRUCT;}
 "mod"                 { return MOD;}
+"printf"              { return PRINTF;}
 
 
 "++"|"--"           { return INCR; }

@@ -20,7 +20,7 @@
 }
 
 /* token definition */
-%token <int_val> INT IF ELSE STRING FOR BOOL VOID RETURN COMMA STRUCT
+%token <int_val> INT IF ELSE STRING FOR BOOL VOID RETURN COMMA STRUCT PRINTF
 %token <int_val> INCR LS_GR EQU_NOTEQU OR AND NOT ADD SUB MUL DIV MOD
 %token <int_val> LPAREN RPAREN LBRACE RBRACE SEMI ASSIGN TRUE FALSE
 %token <ToY_item>   ID
@@ -46,7 +46,7 @@
 
 %%
 
-program: statements struct_optional functions_optional
+program: print_optional statements struct_optional functions_optional
         ;
 
 /* declarations */
@@ -97,7 +97,7 @@ values: ID { if ($1->st_type != INT) yyerror(lineno); }
 statements: statements statement | statement ;
 
 statement:
-	if_statement | for_statement | initialisations | declarations
+	 if_statement | for_statement | initialisations | declarations
 ;
 
 incr:
@@ -110,8 +110,12 @@ if_statement:
 
 optional_else: ELSE tail | /* empty */ ;
 
-tail: LBRACE statements RBRACE
-    | LBRACE incr RBRACE ;
+tail: LBRACE tail_options RBRACE ;
+
+tail_options: print_optional tail_options
+        | statements tail_options
+        | incr tail_options
+        | /* empty */ ;
 
 for_statement:
     FOR LPAREN initialisation arule SEMI ID INCR RPAREN tail
@@ -151,6 +155,7 @@ structs: structs | struct ;
 
 struct: STRUCT ID LBRACE RBRACE
 
+
 /* functions */
 functions_optional: functions | /* empty */ ;
 
@@ -163,17 +168,17 @@ function_head: type ID LPAREN parameters_optional RPAREN {
   $$=$1;
 };
 
-function_tail: LBRACE declarations_optional statements_optional return_mandatory RBRACE {$$=$4;};
+function_tail: LBRACE print_optional declarations_optional statements_optional return_mandatory RBRACE {$$=$5;};
 
 vfunction_head: VOID ID LPAREN parameters_optional RPAREN ;
 
-vfunction_tail: LBRACE declarations_optional statements_optional return_optional RBRACE;
+vfunction_tail: LBRACE declarations_optional statements_optional print_optional return_optional RBRACE;
 
 type: INT {$$=INT;} | STRING {$$=STRING;} | BOOL {$$=BOOL;} ;
 
 parameters_optional: parameters | /* empty */ ;
 
-parameters: parameters COMMA parameter | parameter ;
+parameters: parameters COMMA parameter | parameter  ;
 
 parameter : type ID ;
 
@@ -184,6 +189,12 @@ statements_optional: statements | /* empty */ ;
 return_optional: RETURN SEMI | ;
 
 return_mandatory: RETURN ID SEMI {$$=$2->st_type;};
+
+print_optional: PRINTF LPAREN print_content RPAREN SEMI | /* empty */ ;
+
+print_content: STRING_LIT
+            | arule
+            | exp;
 
 %%
 
