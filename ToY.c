@@ -4,13 +4,14 @@
 #include "ToY.h"
 
 /* current scope */
-struct ScopeNode *cur_scope;
+struct ScopeNode **cur_scope;
 
 void init_hash_table(){
 	int i;
 	hash_table = malloc(SIZE * sizeof(list_t*));
 	for(i = 0; i < SIZE; i++) hash_table[i] = NULL;
-	cur_scope = malloc(sizeof(struct ScopeNode));
+	cur_scope = malloc(sizeof(struct ScopeNode*));
+	(*cur_scope) = malloc(sizeof(struct ScopeNode));
 }
 
 unsigned int hash(char *key){
@@ -33,7 +34,6 @@ void insert(char *name, int len, int type, int lineno){
 		strncpy(l->st_name, name, len);
 		/* add to hashtable */
 		l->st_type = type;
-		l->scope = cur_scope;
 		l->lines = (RefList*) malloc(sizeof(RefList));
 		l->lines->lineno = lineno;
 		l->lines->next = NULL;
@@ -44,8 +44,6 @@ void insert(char *name, int len, int type, int lineno){
 	}
 	/* found in table, so just add line number */
 	else{
-	  //if (lookup_scope())
-		l->scope = cur_scope;
 		RefList *t = l->lines;
 		while (t->next != NULL) t = t->next;
 		/* add linenumber to reference list */
@@ -91,50 +89,72 @@ list_t *lookup_scope(char *name, int len){ /* return symbol if found or NULL if 
 	//while ((l != NULL) && (strcmp(name,l->st_name) != 0) && (scope != l->scope)) l = l->next;
 	//return l; // NULL is not found
 	
-	struct ScopeNode *searchScope = cur_scope;
+	printf("looking up scope: %s\n", name);
+	
+	struct ScopeNode **searchScope = cur_scope;
 	struct ScopeLinkNode *l;
+	
+	//printf("curr scope %i\n", cur_scope);
 	
 	while (searchScope != NULL)
 	{
-	  l = searchScope->scopeLinkHead;
+	  l = (*searchScope)->scopeLinkHead;
+	  //printf("%i\n", l);
 	  
-	  while (l != NULL && strcmp(name, l->listnode->st_name))
+	  while (l != NULL)
 	  {
-	    l = l->next;
+		if (strcmp(name, l->listnode->st_name) == 0) {
+			printf("match found\n");
+			return l->listnode;
+		}
+		l = l->next;
 	  }
-	  if (l != NULL) return l->listnode;
-	  searchScope = searchScope->head;
+	  printf("search scope seg check\n");
+	  if ((*searchScope)->head == NULL) {
+		  printf("not found in scope\n");
+		  return NULL;
+	  }
+	  searchScope = &(*searchScope)->head;
 	}
-	return NULL;
 }
 
 void addToScope (list_t *l)
 {
-  struct ScopeLinkNode *cur = cur_scope->scopeLinkHead;
+  printf("adding to scope: %s\n", l->st_name);
+  struct ScopeLinkNode *cur = (*cur_scope)->scopeLinkHead;
+  //printf("error there\n");
   if (cur == NULL) {
     cur = malloc(sizeof(struct ScopeLinkNode));
     cur->listnode = l;
+    (*cur_scope)->scopeLinkHead = cur;
+    printf("node added new in scope\n");
     return;
   }
+  
   struct ScopeLinkNode *prev;
   while (cur != NULL) {
     prev = cur;
     cur = cur->next;
   }
   cur = malloc(sizeof(struct ScopeLinkNode));
-  prev = cur;
+  cur->listnode = l;
+  prev->next = cur;
+  printf("node added onto existing scope\n");
 }
 
 void hide_scope(){ /* hide the current scope */
-	if(cur_scope->head != NULL) {
-		cur_scope = cur_scope->head;
+	printf("hide scope\n");
+	if((*cur_scope)->head != NULL) {
+		printf("head not null\n");
+		cur_scope = &(*cur_scope)->head;
 	}
 }
 
 void incr_scope(){ /* go to next scope */
+	printf("increase scope\n");
 	struct ScopeNode *newScope = malloc(sizeof(struct ScopeNode));
-	newScope->head = cur_scope;
-	cur_scope = newScope;
+	newScope->head = (*cur_scope);
+	(*cur_scope) = newScope;
 }
 
 /* print to stdout by default */

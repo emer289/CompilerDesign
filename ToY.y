@@ -33,7 +33,6 @@
 %type <int_val> return_mandatory
 
 
-
 /* precedencies and associativities */
 %left LPAREN RPAREN
 %right ASSIGN INCR NOT
@@ -56,14 +55,17 @@ declarations: declarations declaration | declaration;
 declaration: INT ID SEMI      {
                 if ($2->st_type != UNDEF) yyerror(1);
                 $2->st_type = INT;
+                addToScope($2);
               }
             | STRING ID SEMI  {
                 if ($2->st_type != UNDEF) yyerror(1);
                 $2->st_type = STRING;
+                addToScope($2);
               }
             | BOOL ID SEMI    {
                 if ($2->st_type != UNDEF) yyerror(1);
                 $2->st_type = BOOL;
+                addToScope($2);
               }
             ;
 	    
@@ -71,12 +73,15 @@ initialisations: initialisations initialisation | initialisation;
 	    
 initialisation: ID ASSIGN exp SEMI {
       if ($1->st_type != INT) yyerror(1);
+      if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);
     }
 	| ID ASSIGN STRING_LIT SEMI {
       if ($1->st_type != STRING) yyerror(1);
+      if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);
     }
 	| ID ASSIGN brule SEMI  {
       if ($1->st_type != BOOL) yyerror(1);
+      if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);
     };
 
 exp: values
@@ -89,7 +94,8 @@ aritmetic_op: ADD
             | DIV
             ;
 
-values: ID
+values: ID	{ if ($1->st_type != INT) yyerror(lineno);
+		if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno); }
     | ICONST
     ;
 
@@ -101,20 +107,20 @@ statement:
 ;
 
 incr:
-    ID INCR SEMI
+    ID INCR SEMI {if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);}
     ;
 
 if_statement:
-	IF LPAREN arule RPAREN tail optional_else
+	{incr_scope();} IF LPAREN arule RPAREN tail {hide_scope();} optional_else
 ;
 
-optional_else: ELSE tail | /* empty */ ;
+optional_else: {incr_scope();} ELSE tail {hide_scope();} | /* empty */ ;
 
 tail: LBRACE statements RBRACE
     | LBRACE incr RBRACE ;
 
 for_statement:
-    FOR LPAREN initialisation arule SEMI ID INCR RPAREN tail
+    {incr_scope();} FOR LPAREN initialisation arule SEMI ID INCR RPAREN tail {hide_scope();}
     ;
 
 arule: NOT expression
@@ -146,26 +152,32 @@ compare: LS_GR
        ;
 
 struct_optional: structs | /* empty */ ;
-
+ 
 structs: structs | struct ;
 
-struct: STRUCT ID LBRACE RBRACE
+struct: STRUCT ID LBRACE RBRACE;
 
 /* functions */
 functions_optional: functions | /* empty */ ;
 
 functions: functions function | function ;
 
-function: function_head function_tail { if ($1 != $2) yyerror(1); }
-  | vfunction_head vfunction_tail ;
+function: {incr_scope();} 
+	function_head function_tail 
+	{if ($3 != $2) {yyerror(1);} hide_scope();}
+	
+  | 	{incr_scope();} 
+  	vfunction_head vfunction_tail 
+  	{hide_scope();}
+  ;
 
 function_head: type ID LPAREN parameters_optional RPAREN {
   $$=$1;
-}
+};
 
 function_tail: LBRACE declarations_optional statements_optional return_mandatory RBRACE {$$=$4;};
 
-vfunction_head: VOID ID LPAREN parameters_optional RPAREN
+vfunction_head: VOID ID LPAREN parameters_optional RPAREN;
 
 vfunction_tail: LBRACE declarations_optional statements_optional return_optional RBRACE;
 
@@ -175,7 +187,10 @@ parameters_optional: parameters | /* empty */ ;
 
 parameters: parameters COMMA parameter | parameter ;
 
-parameter : type ID ;
+parameter : type ID {
+	$2->st_type = $1;
+	addToScope($2);
+	};
 
 declarations_optional: declarations | /* empty */ ;
 
