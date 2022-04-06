@@ -79,7 +79,12 @@ initialisation: ID ASSIGN exp SEMI {
     }
 	| ID ASSIGN bExp SEMI  {
       if ($1->st_type != BOOL) yyerror(lineno);
+    }
+    | ID ASSIGN ID LPAREN function_call_params RPAREN SEMI{
+     if ($1->st_type != $3->st_type) yyerror(lineno);
     };
+
+
 
 exp: values
     | exp aritmetic_op values
@@ -157,12 +162,15 @@ function: function_head function_tail { if ($1 != $2) yyerror(lineno); }
   | vfunction_head vfunction_tail ;
 
 function_head: INT ID LPAREN parameters_optional RPAREN {
+               $2->st_type = INT;
                $$ = INT;
                }
                | STRING ID LPAREN parameters_optional RPAREN {
+               $2->st_type = STRING;
                $$ = STRING;
                }
                | BOOL ID LPAREN parameters_optional RPAREN {
+               $2->st_type = BOOL;
                $$ = BOOL;
                };
 

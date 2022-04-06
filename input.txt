@@ -1,5 +1,5 @@
 printf(true);
-//invalidValue = 15;
+//invalidValue lkjjdkfs dlnflkjdsl ;
 int val;
 string hello;
 val = 5;
@@ -20,18 +20,26 @@ struct Name {
     int gooooo;
     string tomatoe;
 }
-int func(int num){
 
+
+int funct(int num){
+  int someval;
+  someval = 100;
+  printf("hello");
+  return someval;
+}
+int func(int num){
+    int two;
+    two = 2;
     printf("hello");
     int ival;
-    ival = 5+1;
-    
+    ival = funct(two);
     string ihello;
     hello = "hello";
-    
+
     bool istrueagain;
     istrueagain = true;
-    
+
     if((ival > 5) and (!true)){
         ival++;
         funct(val);
@@ -39,11 +47,4 @@ int func(int num){
         ival--;
     }
     return ival;
-}
-
-void funct(int num){
-  int someval;
-  someval = 100;
-  printf("hello");
-  return ;
 }
