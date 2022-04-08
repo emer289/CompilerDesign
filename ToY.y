@@ -58,30 +58,33 @@ incr:
 declaration: INT ID SEMI      {
                 if ($2->st_type != UNDEF) yyerror(lineno);
                 $2->st_type = INT;
+                addToScope($2);
               }
             | STRING ID SEMI  {
                 if ($2->st_type != UNDEF) yyerror(lineno);
                 $2->st_type = STRING;
+                addToScope($2);
               }
             | BOOL ID SEMI    {
                 if ($2->st_type != UNDEF) yyerror(lineno);
                 $2->st_type = BOOL;
+                addToScope($2);
               }
             ;
 
 initialisations:  initialisation;
 
 initialisation: ID ASSIGN exp SEMI {
-      if ($1->st_type != INT) yyerror(lineno);
+      if ($1->st_type != INT) yyerror(1);
+      if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);
     }
 	| ID ASSIGN STRING_LIT SEMI {
-      if ($1->st_type != STRING) yyerror(lineno);
+      if ($1->st_type != STRING) yyerror(1);
+      if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);
     }
-	| ID ASSIGN bExp SEMI  {
-      if ($1->st_type != BOOL) yyerror(lineno);
-    }
-    | ID ASSIGN ID LPAREN function_call_params RPAREN SEMI{
-     if ($1->st_type != $3->st_type) yyerror(lineno);
+	| ID ASSIGN brule SEMI  {
+      if ($1->st_type != BOOL) yyerror(1);
+      if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);
     };
 
 
@@ -96,9 +99,26 @@ aritmetic_op: ADD
             | DIV
             ;
 
-values: ID { if ($1->st_type != INT) yyerror(lineno); }
+
+values: ID	{ if ($1->st_type != INT) yyerror(lineno);
+		if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno); }
     | ICONST
     ;
+
+/* statements */
+statements: statements statement | statement ;
+
+statement:
+	if_statement | for_statement | initialisations | declarations
+;
+
+incr:
+    ID INCR SEMI {if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);}
+    ;
+
+if_statement:
+	{incr_scope();} IF LPAREN arule RPAREN tail {hide_scope();} optional_else
+  ;
 
 all_vals: ICONST
     | ID
@@ -106,18 +126,14 @@ all_vals: ICONST
     | TRUE
     | FALSE;
 
-if_statement:
-	IF LPAREN bExp RPAREN tail optional_else
-;
-
-optional_else: ELSE tail | /* empty */ ;
+optional_else: {incr_scope();} ELSE tail {hide_scope();} | /* empty */ ;
 
 tail: LBRACE tail_options RBRACE ;
 
 tail_options: statement tail_options | ;
 
 for_statement:
-    FOR LPAREN initialisation bExp SEMI ID INCR RPAREN tail
+    {incr_scope();} FOR LPAREN initialisation arule SEMI ID INCR RPAREN tail {hide_scope();}
     ;
 
 
@@ -149,11 +165,25 @@ print_content: STRING_LIT
 
 function_call: ID LPAREN function_call_params RPAREN SEMI;
 
+
+function: {incr_scope();} 
+	function_head function_tail 
+	{if ($3 != $2) {yyerror(1);} hide_scope();}
+	
+  | 	{incr_scope();} 
+  	vfunction_head vfunction_tail 
+  	{hide_scope();}
+  ;
+
+function_head: type ID LPAREN parameters_optional RPAREN {
+  $$=$1;
+};
+
 function_call_params: function_call_param | /* empty */ ;
 
 function_call_param: function_call_param COMMA all_vals | all_vals  ;
 
-
+vfunction_head: VOID ID LPAREN parameters_optional RPAREN;
 
 
 /* functions */
@@ -182,6 +212,10 @@ vfunction_tail: LBRACE tail_options return_optional RBRACE;
 
 parameters_optional: parameters | /* empty */ ;
 
+parameter : type ID {
+	$2->st_type = $1;
+	addToScope($2);
+	};
 parameters: parameters COMMA parameter | parameter  ;
 
 parameter : INT ID ;

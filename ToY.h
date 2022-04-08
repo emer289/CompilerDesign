@@ -37,7 +37,7 @@ typedef struct RefList{
 typedef struct list_t{
 	char st_name[MAXTOKENLEN];
     int st_size;
-    int scope;
+    struct ScopeNode *scope;
     RefList *lines;
 	// to store value and sometimes more information
 	int st_ival; double st_fval; char *st_sval;
@@ -53,6 +53,16 @@ typedef struct list_t{
 	// pointer to next item in the list
 	struct list_t *next;
 }list_t;
+
+typedef struct ScopeNode{
+	struct ScopeLinkNode *scopeLinkHead;
+	struct ScopeNode *head;
+}ScopeNode;
+
+typedef struct ScopeLinkNode{
+  struct list_t *listnode;
+  struct ScopeLinkNode *next;
+}ScopeLinkNode;
 
 /* the hash table */
 static list_t **hash_table;

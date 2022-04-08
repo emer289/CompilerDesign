@@ -9,3 +9,7 @@ y.tab.c: ToY.y
 
 clean:
 	rm -rf lex.yy.c y.tab.c y.tab.h ToY ToY.dSYM
+
+force:
+	touch ToY.y
+	$(MAKE)
