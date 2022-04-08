@@ -82,7 +82,15 @@ initialisation: ID ASSIGN exp SEMI {
 	| ID ASSIGN bExp SEMI  {
       if ($1->st_type != BOOL) yyerror(1);
       if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);
-    };
+    }
+    	| ID ASSIGN ID LPAREN function_call_params RPAREN SEMI {
+    	if ($1->st_type != $3->st_type) yyerror(lineno);
+    	if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);
+    	printf("we checked here\n");
+    	if (lookup_scope($3->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);
+    	printf("got here\n");
+    	}
+    ;
 
 
 
@@ -155,33 +163,28 @@ print_content: STRING_LIT
              | bExp
              | exp;
 
-function_call: ID LPAREN function_call_params RPAREN SEMI;
+function_call: ID LPAREN function_call_params RPAREN SEMI {if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);};
 
-
-function: {incr_scope();}
-	function_head function_tail 
-	{if ($3 != $2) {yyerror(1);} hide_scope();}
-  | 	{incr_scope();} 
-  	vfunction_head vfunction_tail 
-  	{hide_scope();}
+function: function_head function_tail {if ($1 != $2) {yyerror(1);} hide_scope();}
+  | {incr_scope();} vfunction_head vfunction_tail {hide_scope();}
   ;
 
 function_call_params: function_call_param | /* empty */ ;
 
 function_call_param: function_call_param COMMA all_vals | all_vals  ;
 
-function_head: INT ID LPAREN parameters_optional RPAREN {
-               $2->st_type = INT;
-               $$ = INT;
-               }
-               | STRING ID LPAREN parameters_optional RPAREN {
-               $2->st_type = STRING;
-               $$ = STRING;
-               }
-               | BOOL ID LPAREN parameters_optional RPAREN {
-               $2->st_type = BOOL;
-               $$ = BOOL;
-               };
+function_head: INT ID 
+		{$2->st_type = INT; addToScope($2); incr_scope();}
+		LPAREN parameters_optional RPAREN {$$ = INT;}
+               |
+               STRING ID
+		{$2->st_type = STRING; addToScope($2); incr_scope();}
+		LPAREN parameters_optional RPAREN {$$ = STRING;}
+               |
+               BOOL ID 
+		{$2->st_type = BOOL; addToScope($2); incr_scope();}
+		LPAREN parameters_optional RPAREN {$$ = BOOL;}
+               ;
 
 function_tail: LBRACE tail_options return_mandatory RBRACE {$$=$3;};
 
