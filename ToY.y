@@ -30,6 +30,7 @@
 %type <int_val> function_head
 %type <int_val> function_tail
 %type <int_val> return_mandatory
+%type <int_val> type
 
 /* precedencies and associativities */
 %left LPAREN RPAREN
@@ -50,10 +51,6 @@ statement:
 	 for_statement | if_statement | initialisations | declaration
 	 | struct | print | function_call | incr
 ;
-
-incr:
-    ID INCR SEMI
-    ;
 
 declaration: INT ID SEMI      {
                 if ($2->st_type != UNDEF) yyerror(lineno);
@@ -82,7 +79,7 @@ initialisation: ID ASSIGN exp SEMI {
       if ($1->st_type != STRING) yyerror(1);
       if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);
     }
-	| ID ASSIGN brule SEMI  {
+	| ID ASSIGN bExp SEMI  {
       if ($1->st_type != BOOL) yyerror(1);
       if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);
     };
@@ -106,18 +103,18 @@ values: ID	{ if ($1->st_type != INT) yyerror(lineno);
     ;
 
 /* statements */
-statements: statements statement | statement ;
+//statements: statements statement | statement ;
 
-statement:
-	if_statement | for_statement | initialisations | declarations
-;
+//statement:
+//	if_statement | for_statement | initialisations | declarations
+//;
 
 incr:
     ID INCR SEMI {if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);}
     ;
 
 if_statement:
-	{incr_scope();} IF LPAREN arule RPAREN tail {hide_scope();} optional_else
+	{incr_scope();} IF LPAREN aExp RPAREN tail {hide_scope();} optional_else
   ;
 
 all_vals: ICONST
@@ -133,13 +130,8 @@ tail: LBRACE tail_options RBRACE ;
 tail_options: statement tail_options | ;
 
 for_statement:
-    {incr_scope();} FOR LPAREN initialisation arule SEMI ID INCR RPAREN tail {hide_scope();}
+    {incr_scope();} FOR LPAREN initialisation aExp SEMI ID INCR RPAREN tail {hide_scope();}
     ;
-
-
-
-
-
 
 bTer: TRUE | FALSE | values compare values;
 
@@ -153,7 +145,7 @@ compare: LS_GR
        | EQU_NOTEQU
        ;
 
-struct: STRUCT ID LBRACE struct_options RBRACE
+struct: STRUCT ID LBRACE struct_options RBRACE;
 
 struct_options: declaration struct_options | /* empty */  ;
 
@@ -166,30 +158,17 @@ print_content: STRING_LIT
 function_call: ID LPAREN function_call_params RPAREN SEMI;
 
 
-function: {incr_scope();} 
+function: {incr_scope();}
 	function_head function_tail 
 	{if ($3 != $2) {yyerror(1);} hide_scope();}
-	
   | 	{incr_scope();} 
   	vfunction_head vfunction_tail 
   	{hide_scope();}
   ;
 
-function_head: type ID LPAREN parameters_optional RPAREN {
-  $$=$1;
-};
-
 function_call_params: function_call_param | /* empty */ ;
 
 function_call_param: function_call_param COMMA all_vals | all_vals  ;
-
-vfunction_head: VOID ID LPAREN parameters_optional RPAREN;
-
-
-/* functions */
-
-function: function_head function_tail { if ($1 != $2) yyerror(lineno); }
-  | vfunction_head vfunction_tail ;
 
 function_head: INT ID LPAREN parameters_optional RPAREN {
                $2->st_type = INT;
@@ -216,9 +195,10 @@ parameter : type ID {
 	$2->st_type = $1;
 	addToScope($2);
 	};
-parameters: parameters COMMA parameter | parameter  ;
+	
+type: INT {$$=INT;} | STRING {$$=STRING;} | BOOL {$$=BOOL;} ;
 
-parameter : INT ID ;
+parameters: parameters COMMA parameter | parameter  ;
 
 
 return_optional: RETURN SEMI | ;
