@@ -1,40 +1,50 @@
-//invalidValue = 15;
+printf(true);
+//invalidValue lkjjdkfs dlnflkjdsl ;
 int val;
 string hello;
 val = 5;
-hello = "hello";
+hello = "hell$o";
 bool istrue;
 istrue = true;
 if((val > 5) and (! true)){
+    func(val);
     val++;
+    printf("hello");
+
 }
 for ( val = 1; val > 5; val++ ){
     val++;
+    func(val);
 }
 struct Name {
+    int gooooo;
+    string tomatoe;
+}
 
+
+int funct(int num){
+  int someval;
+  someval = 100;
+  printf("hello");
+  return someval;
 }
 int func(int num){
+    int two;
+    two = 2;
+    printf("hello");
     int ival;
-    ival = 5+1;
-    
+    ival = funct(two);
     string ihello;
     hello = "hello";
-    
+
     bool istrueagain;
     istrueagain = true;
-    
+
     if((ival > 5) and (!true)){
         ival++;
+        funct(val);
     }else{
         ival--;
     }
-
     return ival;
-}
-
-void func(int num){
-  int someval;
-  someval = 100;
-  return ;
 }

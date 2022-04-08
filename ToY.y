@@ -20,18 +20,16 @@
 }
 
 /* token definition */
-%token <int_val> INT IF ELSE STRING FOR BOOL VOID RETURN COMMA STRUCT
+%token <int_val> INT IF ELSE STRING FOR BOOL VOID RETURN COMMA STRUCT PRINTF
 %token <int_val> INCR LS_GR EQU_NOTEQU OR AND NOT ADD SUB MUL DIV MOD
 %token <int_val> LPAREN RPAREN LBRACE RBRACE SEMI ASSIGN TRUE FALSE
 %token <ToY_item>   ID
 %token <int_val>    ICONST
 %token <str_val>    STRING_LIT
 
-%type <int_val> type
 %type <int_val> function_head
 %type <int_val> function_tail
 %type <int_val> return_mandatory
-
 
 /* precedencies and associativities */
 %left LPAREN RPAREN
@@ -45,32 +43,37 @@
 
 %%
 
-program: statements struct_optional functions_optional
-        ;
-
+program: statement program | function program | ;
 /* declarations */
-declarations: declarations declaration | declaration;
 
+statement:
+	 for_statement | if_statement | initialisations | declaration
+	 | struct | print | function_call | incr
+;
+
+incr:
+    ID INCR SEMI
+    ;
 
 declaration: INT ID SEMI      {
-                if ($2->st_type != UNDEF) yyerror(1);
+                if ($2->st_type != UNDEF) yyerror(lineno);
                 $2->st_type = INT;
                 addToScope($2);
               }
             | STRING ID SEMI  {
-                if ($2->st_type != UNDEF) yyerror(1);
+                if ($2->st_type != UNDEF) yyerror(lineno);
                 $2->st_type = STRING;
                 addToScope($2);
               }
             | BOOL ID SEMI    {
-                if ($2->st_type != UNDEF) yyerror(1);
+                if ($2->st_type != UNDEF) yyerror(lineno);
                 $2->st_type = BOOL;
                 addToScope($2);
               }
             ;
-	    
-initialisations: initialisations initialisation | initialisation;
-	    
+
+initialisations:  initialisation;
+
 initialisation: ID ASSIGN exp SEMI {
       if ($1->st_type != INT) yyerror(1);
       if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);
@@ -84,6 +87,8 @@ initialisation: ID ASSIGN exp SEMI {
       if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);
     };
 
+
+
 exp: values
     | exp aritmetic_op values
     ;
@@ -93,6 +98,7 @@ aritmetic_op: ADD
             | MUL
             | DIV
             ;
+
 
 values: ID	{ if ($1->st_type != INT) yyerror(lineno);
 		if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno); }
@@ -112,55 +118,53 @@ incr:
 
 if_statement:
 	{incr_scope();} IF LPAREN arule RPAREN tail {hide_scope();} optional_else
-;
+  ;
+
+all_vals: ICONST
+    | ID
+    | STRING_LIT
+    | TRUE
+    | FALSE;
 
 optional_else: {incr_scope();} ELSE tail {hide_scope();} | /* empty */ ;
 
-tail: LBRACE statements RBRACE
-    | LBRACE incr RBRACE ;
+tail: LBRACE tail_options RBRACE ;
+
+tail_options: statement tail_options | ;
 
 for_statement:
     {incr_scope();} FOR LPAREN initialisation arule SEMI ID INCR RPAREN tail {hide_scope();}
     ;
 
-arule: NOT expression
-      | LPAREN arule RPAREN
-      | expression
-      ;
-
-expression:
-        arule AND arule
-        | crule
-        ;
-crule:
-    | brule
-    | brule OR arule
-    ;
-
-brule:
-      values compare values
-      |TRUE
-      |FALSE
-      ;
 
 
 
 
+
+bTer: TRUE | FALSE | values compare values;
+
+bExp: NOT aExp | aExp ;
+
+aExp: aExp AND bTer | oExp | LPAREN bExp RPAREN AND aExp ;
+
+oExp: oExp OR bTer | bTer | LPAREN bExp RPAREN OR oExp | LPAREN bExp RPAREN ;
 
 compare: LS_GR
        | EQU_NOTEQU
        ;
 
-struct_optional: structs | /* empty */ ;
- 
-structs: structs | struct ;
+struct: STRUCT ID LBRACE struct_options RBRACE
 
-struct: STRUCT ID LBRACE RBRACE;
+struct_options: declaration struct_options | /* empty */  ;
 
-/* functions */
-functions_optional: functions | /* empty */ ;
+print: PRINTF LPAREN print_content RPAREN SEMI ;
 
-functions: functions function | function ;
+print_content: STRING_LIT
+             | bExp
+             | exp;
+
+function_call: ID LPAREN function_call_params RPAREN SEMI;
+
 
 function: {incr_scope();} 
 	function_head function_tail 
@@ -175,26 +179,47 @@ function_head: type ID LPAREN parameters_optional RPAREN {
   $$=$1;
 };
 
-function_tail: LBRACE declarations_optional statements_optional return_mandatory RBRACE {$$=$4;};
+function_call_params: function_call_param | /* empty */ ;
+
+function_call_param: function_call_param COMMA all_vals | all_vals  ;
 
 vfunction_head: VOID ID LPAREN parameters_optional RPAREN;
 
-vfunction_tail: LBRACE declarations_optional statements_optional return_optional RBRACE;
 
-type: INT {$$=INT;} | STRING {$$=STRING;} | BOOL {$$=BOOL;} ;
+/* functions */
+
+function: function_head function_tail { if ($1 != $2) yyerror(lineno); }
+  | vfunction_head vfunction_tail ;
+
+function_head: INT ID LPAREN parameters_optional RPAREN {
+               $2->st_type = INT;
+               $$ = INT;
+               }
+               | STRING ID LPAREN parameters_optional RPAREN {
+               $2->st_type = STRING;
+               $$ = STRING;
+               }
+               | BOOL ID LPAREN parameters_optional RPAREN {
+               $2->st_type = BOOL;
+               $$ = BOOL;
+               };
+
+function_tail: LBRACE tail_options return_mandatory RBRACE {$$=$3;};
+
+vfunction_head: VOID ID LPAREN parameters_optional RPAREN ;
+
+vfunction_tail: LBRACE tail_options return_optional RBRACE;
 
 parameters_optional: parameters | /* empty */ ;
-
-parameters: parameters COMMA parameter | parameter ;
 
 parameter : type ID {
 	$2->st_type = $1;
 	addToScope($2);
 	};
+parameters: parameters COMMA parameter | parameter  ;
 
-declarations_optional: declarations | /* empty */ ;
+parameter : INT ID ;
 
-statements_optional: statements | /* empty */ ;
 
 return_optional: RETURN SEMI | ;
 

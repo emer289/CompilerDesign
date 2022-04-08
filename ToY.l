@@ -24,7 +24,7 @@ print     [ -~]
 ID        {alpha}+{alnum}*
 ICONST    "0"|[0-9]{digit}*
 FCONST    "0"|{digit}*"."{digit}+
-STRING_LIT    \"{print}*\"
+STRING_LIT    \"([^"\\])*\"
 
 %%
 
@@ -43,6 +43,7 @@ STRING_LIT    \"{print}*\"
 "return"              { return RETURN; }
 "struct"              { return STRUCT;}
 "mod"                 { return MOD;}
+"printf"              { return PRINTF;}
 
 
 "++"|"--"           { return INCR; }
