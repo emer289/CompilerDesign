@@ -74,7 +74,13 @@ STRING_LIT    \"([^"\\])*\"
         yylval.ToY_item = lookup(yytext);
         return ID;
         }
-{ICONST}    { yylval.int_val   = atoi(yytext); return ICONST; }
+{ICONST}    { yylval.int_val = atoi(yytext);
+                if(yylval.int_val<32768)
+                {return ICONST;}
+                else{
+                yyerror(" number to large");
+                }
+                }
 {STRING_LIT}    { yylval.str_val = malloc(yyleng * sizeof(char));
               strcpy(yylval.str_val, yytext);  return STRING_LIT; }
 
@@ -85,3 +91,4 @@ STRING_LIT    \"([^"\\])*\"
 .       { yyerror("Unrecognized character"); }
 
 %%
+
