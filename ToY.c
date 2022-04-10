@@ -116,6 +116,7 @@ list_t *lookup_scope(char *name, int len){ /* return symbol if found or NULL if 
 	  }
 	  searchScope = &(*searchScope)->head;
 	}
+	return NULL;
 }
 
 void addToScope (list_t *l)

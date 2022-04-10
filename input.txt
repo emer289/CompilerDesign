@@ -1,52 +1,42 @@
-printf(true);
-//invalidValue lkjjdkfs dlnflkjdsl ;
-int val;
-string hello;
-val = 5;
-hello = "hell$o";
-bool istrue;
-istrue = true;
 
-if((val > 5) and (! true)){
-    val++;
-    printf("hello");
-
-}
-for ( val = 1; val > 5; val++ ){
-    val++;
-}
 struct Name {
     int gooooo;
     string tomatoe;
 }
-
-int funct(int num){
-  int someval;
-  someval = 100;
-  printf("hello");
-  return someval;
+struct Name1 {
+    string tomat;
+    struct Name Emer;
 }
-
 
 
 int func(int num){
     int two;
-    two = 2;
+    two = 2+2-2+(3/4);
     printf("hello");
-    int ival;
-    funct(val);
-    ival = funct(two);
-    string ihello;
-    hello = "hello";
 
+    int ival;
+    ival = 2;
+    string hello;
+    hello = "hello";
+    printf(hello);
+    struct Name Emer;
     bool istrueagain;
     istrueagain = true;
 
-    if((ival > 5) and (!true)){
+    if((ival > 5) and (!true)) then {
         ival++;
-        funct(val);
     }else{
         ival--;
     }
     return ival;
+}
+
+void funct(){
+    int three;
+    three = 3;
+    printf("hello");
+    int gval;
+    gval = func(2);
+
+    return ;
 }

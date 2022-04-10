@@ -16,10 +16,9 @@
 
 %x ML_COMMENT
 
-alpha     [a-zA-Z]
+alpha     [a-zA-Z_]
 digit     [0-9]
 alnum     {alpha}|{digit}
-print     [ -~]
 
 ID        {alpha}+{alnum}*
 ICONST    "0"|[0-9]{digit}*
@@ -28,45 +27,44 @@ STRING_LIT    \"([^"\\])*\"
 
 %%
 
-"//".*        { printf("Eat up comment at line %d\n", lineno); }
+"//".*        { printf("comment at line %d\n", lineno); }
+"##".*        { printf("comment at line %d\n", lineno); }
 
-
-"for"                 { return FOR; }
-"int"|"INT"           { return INT; }
-"if"|"IF"             { return IF; }
-"else"|"ELSE"         { return ELSE; }
-"string"              { return STRING; }
+"bool"                { return BOOL; }
+"int"                 { return INT; }
 "true"                { return TRUE; }
 "false"               { return FALSE; }
-"bool"                { return BOOL; }
 "void"                { return VOID; }
-"return"              { return RETURN; }
-"struct"              { return STRUCT;}
-"mod"                 { return MOD;}
 "printf"              { return PRINTF;}
+"string"              { return STRING; }
+"struct"              { return STRUCT;}
+"if"                  { return IF; }
+"then"                { return THEN;}
+"else"                { return ELSE; }
+"for"                 { return FOR; }
+"return"              { return RETURN; }
 
-
-"++"|"--"           { return INCR; }
-"!"                 { return NOT; }
-">"|"<"|">="|"<="   { return LS_GR; }
-"=="|"!="           { return EQU_NOTEQU; }
-
-"+"                 { return ADD; }
-"-"                 { return SUB; }
-"/"                 { return DIV; }
-"*"                 { return MUL; }
-
-"or"                { return OR; }
-"and"                { return AND; }
-
-
-
-"("       { return LPAREN; }
-")"       { return RPAREN; }
 "{"       { return LBRACE; }
 "}"       { return RBRACE; }
 ";"       { return SEMI; }
+">"|"<"|">="|"<="   { return LS_GR; }
+"=="|"!="           { return EQU_NOTEQU; }
+"!"|"not"           { return NOT; }
+"+"                 { return ADD; }
+"-"                 { return SUB; }
+"/"                 { return DIV; }
+"."                 { return FULLSTOP; }
+"*"                 { return MUL; }
 "="       { return ASSIGN; }
+"mod"                 { return MOD;}
+"++"|"--"           { return INCR; }
+"or"                { return OR; }
+"and"                { return AND; }
+
+"("       { return LPAREN; }
+")"       { return RPAREN; }
+
+
 ","       { return COMMA; }
 
 
