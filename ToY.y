@@ -35,7 +35,7 @@
 /* precedencies and associativities */
 %left LPAREN RPAREN
 %right ASSIGN INCR NOT
-%left LS_GR EQU_NOTEQU OR AND ADD SUB MUL DIV
+%left LS_GR EQU_NOTEQU OR AND ADD SUB MUL DIV MOD
 
 
 %start program
@@ -73,7 +73,7 @@ declaration: INT ID SEMI      {
 
 initialisations:  initialisation;
 
-initialisation: ID ASSIGN exp SEMI {
+initialisation: ID ASSIGN arExp SEMI {
       if ($1->st_type != INT) yyerror(1);
       if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);
     }
@@ -97,27 +97,18 @@ initialisation: ID ASSIGN exp SEMI {
 
 //arithmetic code
 
-exp: exp ADD exp
-    | exp SUB exp
-    | exp MUL exp
-    | exp DIV exp
-    | SUB values
-    | LPAREN exp RPAREN
-    | values
-    ;
-
+arExp: arExp ADD sExp | sExp ;
+sExp: sExp SUB sVal | mExp | LPAREN arExp RPAREN SUB sExp ;
+mExp: mExp MUL sVal | dExp | LPAREN arExp RPAREN MUL mExp ;
+dExp: dExp DIV sVal | ModExp | LPAREN arExp RPAREN DIV dExp ;
+ModExp: ModExp MOD sVal | sVal | LPAREN arExp RPAREN MOD ModExp | LPAREN arExp RPAREN ;
+sVal: SUB values | values  ;
 
 values: ID	{ if ($1->st_type != INT) yyerror(lineno);
 		if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno); }
     | ICONST
     ;
 
-/* statements */
-//statements: statements statement | statement ;
-
-//statement:
-//	if_statement | for_statement | initialisations | declarations
-//;
 
 incr:
     ID INCR SEMI {if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);}
@@ -135,7 +126,8 @@ all_vals: ICONST
 
 optional_else: {incr_scope();} ELSE tail {hide_scope();} | /* empty */ ;
 
-tail: LBRACE tail_options RBRACE ;
+tail: LBRACE tail_options RBRACE
+    ;
 
 tail_options: statement tail_options | ;
 

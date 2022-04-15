@@ -1,4 +1,4 @@
-
+//this should be valid
 struct Name {
     int gooooo;
     string tomatoe;
@@ -11,11 +11,11 @@ struct Name1 {
 
 int func(int num){
     int two;
-    two = 2+2-2+(3/4);
+    two = (2*2)+(2/2);
     printf("hello");
 
     int ival;
-    ival = 2;
+    ival = 3276;
     string hello;
     hello = "hello";
     printf(hello);
@@ -23,7 +23,7 @@ int func(int num){
     bool istrueagain;
     istrueagain = true;
 
-    if((ival > 5) and (!true)) then {
+    if((ival > 5) and (true or false) and (!true)) then {
         ival++;
     }else{
         ival--;
@@ -40,3 +40,5 @@ void funct(){
 
     return ;
 }
+
+
