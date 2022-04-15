@@ -1,0 +1,21 @@
+void main(){
+   int numberToLarge;
+
+   //for this instantiation (when commented out) the compiler returns ERROR
+   //numberToLarge = 32768;
+
+   //for this instantiation (when commented out) the compiler returns VALID
+   numberToLarge = 32766;
+
+   int numberToSmall;
+
+   //for this instantiation (when commented out) the compiler returns ERROR
+   //numberToSmall = -32768;
+
+   //for this instantiation the compiler (when commented out) returns VALID
+   numberToSmall = -32766;
+}
+
+
+
+

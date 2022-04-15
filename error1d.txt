@@ -1,0 +1,17 @@
+void main(){
+
+   //valid id
+   string wd7_;
+   wd7_ = "hello world";
+
+   //valid id
+   string _wd7_;
+   _wd7_ = "hello world";
+
+   //invalid id
+   string 1wd7;
+   1wd7 = "hello world";
+
+
+
+}

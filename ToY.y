@@ -158,7 +158,7 @@ print: PRINTF LPAREN STRING_LIT RPAREN SEMI |
         PRINTF LPAREN ID RPAREN SEMI { if ($3->st_type != STRING) yyerror(lineno); }
         ;
 
-function_call: ID LPAREN SEMI {if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);};
+function_call: ID LPAREN function_call_params RPAREN SEMI {if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);};
 
 function_call_params: function_call_param | /* empty */ ;
 

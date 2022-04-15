@@ -1,0 +1,23 @@
+void helloWorld(){
+
+    string hello;
+
+    //for this instantiation the compiler returns VALID
+    //hello = "hello";
+
+    //for this instantiation (when commented out) the compiler returns ERROR
+    //hello = "hello;
+
+    //for this instantiation (when commented out) the compiler returns ERROR
+    //no semi colon
+    hello = "hello"
+
+    printf(hello);
+    return ;
+}
+
+void main(){
+    helloWorld();
+
+    return ;
+}
