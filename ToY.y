@@ -29,6 +29,7 @@
 
 %type <int_val> function_head
 %type <int_val> function_tail
+%type <int_val> vfunction_head
 %type <int_val> return_mandatory
 %type <int_val> type
 
@@ -115,7 +116,7 @@ incr:
     ;
 
 if_statement:
-	{incr_scope();} IF LPAREN aExp RPAREN THEN tail {hide_scope();} optional_else
+    {incr_scope();} IF LPAREN aExp RPAREN THEN tail {hide_scope();} optional_else
   ;
 
 all_vals: ICONST
@@ -157,7 +158,7 @@ print: PRINTF LPAREN STRING_LIT RPAREN SEMI |
         PRINTF LPAREN ID RPAREN SEMI { if ($3->st_type != STRING) yyerror(lineno); }
         ;
 
-function_call: ID LPAREN function_call_params RPAREN SEMI {if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);};
+function_call: ID LPAREN SEMI {if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);};
 
 function_call_params: function_call_param | /* empty */ ;
 
@@ -182,7 +183,9 @@ function_head: INT ID
 
 function_tail: LBRACE tail_options return_mandatory RBRACE {$$=$3;};
 
-vfunction_head: VOID ID LPAREN parameters_optional RPAREN ;
+vfunction_head: VOID ID
+        {$2->st_type = VOID; addToScope($2); incr_scope();}
+        LPAREN parameters_optional RPAREN {$$ = VOID;};
 
 vfunction_tail: LBRACE tail_options return_optional RBRACE;
 
@@ -193,7 +196,7 @@ parameter : type ID {
 	addToScope($2);
 	};
 	
-type: INT {$$=INT;} | STRING {$$=STRING;} | BOOL {$$=BOOL;} ;
+type: INT {$$=INT;} | STRING {$$=STRING;} | BOOL {$$=BOOL;} | VOID {$$=VOID;};
 
 parameters: parameters COMMA parameter | parameter  ;
 
