@@ -1,3 +1,5 @@
+//String containing escaped characters e.g., "Hello \"world\"!"
+
 void helloWorld(){
 
     string hello;

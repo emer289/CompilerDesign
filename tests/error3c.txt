@@ -1,0 +1,22 @@
+//If condition is a boolean expression
+void main(){
+
+    int ival;
+    ival = 1;
+
+    //valid if statement
+    if((ival > 5) and (true or false) and (!true)) then {
+        printf("if");
+    }else{
+        printf("ele");
+    }
+
+    //valid if statement
+    if(ival = 6) then {
+        printf("if");
+    }else{
+        printf("ele");
+    }
+
+    return ;
+}

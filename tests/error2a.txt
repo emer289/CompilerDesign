@@ -1,0 +1,14 @@
+//Reserve words used as variable names
+
+void main(){
+
+   //valid id
+   string two;
+   two = "2";
+
+   //invalid because int is a reserved word
+   string int;
+   int = "2";
+
+
+}

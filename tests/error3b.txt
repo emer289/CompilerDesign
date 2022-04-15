@@ -1,0 +1,17 @@
+//Second component of the for loop is a boolean expression
+void main(int num){
+
+    //valid for loop
+    int i;
+    for(i=0; i<6; i++){
+        printf("in the for loop");
+    }
+
+    //invalid for loop
+    int i;
+    for(i=0; i=6; i++){
+        printf("in the for loop");
+    }
+
+    return ;
+}

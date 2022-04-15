@@ -1,0 +1,16 @@
+//incorrect precedence and associativity rules are implemented
+//I don't really understand what that means so I'm not sure if it tests that
+void main(){
+
+   int a;
+   a = 2;
+   int b;
+   b = 3;
+   int c;
+   c = 4;
+
+   //valid id
+   bool isValid;
+   isValid = a < b < c;
+
+}

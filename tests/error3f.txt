@@ -1,0 +1,3 @@
+//Variables, procedures and records are used correctly
+//(they are in scope and used at the correct type) according to the rules
+//described above (in the other tests)

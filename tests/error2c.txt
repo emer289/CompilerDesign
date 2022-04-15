@@ -1,0 +1,10 @@
+//Re-declaration variable
+
+void main(){
+   //valid id
+   string two;
+   two = "2";
+
+   //Re-declaration of the variable
+   string two;
+}

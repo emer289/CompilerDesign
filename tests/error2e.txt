@@ -1,0 +1,4 @@
+//this is a struct test
+//it should test
+//Bad struct usage: LHS of dot in variable reference is not a known
+//struct and RHS is not a field in that struct

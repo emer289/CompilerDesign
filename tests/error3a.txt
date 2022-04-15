@@ -1,0 +1,40 @@
+//Return type matches the method definition
+
+//valid
+int func(){
+    int ival;
+    ival = 4;
+    return ival;
+}
+
+//valid
+string func(){
+    string sval;
+    sval = "sval";
+    return sval;
+}
+
+//valid
+bool func(){
+    bool isBool;
+    isBool = true;
+    return isBool;
+}
+
+//valid
+void funct(){
+    return ;
+}
+
+//valid
+void funct(){
+    int add;
+    add = 1+1;
+}
+
+//invalid
+string func(){
+   int val;
+   val = 4;
+   return val;
+}

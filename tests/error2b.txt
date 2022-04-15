@@ -1,0 +1,10 @@
+//Use of undeclared variables
+
+void main(){
+   //valid id
+   string two;
+   two = "2";
+
+   //use of undeclared variable
+   three = "3";
+}

@@ -1,3 +1,4 @@
+// Bad string literals e.g., "Hello
 void helloWorld(){
 
     string hello;

@@ -1,0 +1,33 @@
+//Assignments and function calls are well-typed
+
+//this returns valid
+int func(int num){
+    //valid
+    int two;
+    two = (((2*2)+(2/2))/((2*2)+(2/2))) + 1;
+    return two;
+}
+
+void helloWorld(){
+
+    string hello;
+    hello = "hello";
+    printf(hello);
+    return ;
+}
+
+int threeFunct(){
+
+    int three;
+    three = 3;
+    return three;
+}
+
+void main(){
+    helloWorld();
+    int number3;
+    number3 = threeFunct();
+    return ;
+}
+
+
