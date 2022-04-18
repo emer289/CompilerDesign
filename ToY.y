@@ -210,7 +210,12 @@ parameters: parameters COMMA parameter | parameter  ;
 
 return_optional: RETURN SEMI | ;
 
-return_mandatory: RETURN ID SEMI {$$=$2->st_type;};
+return_mandatory: RETURN ID SEMI {$$=$2->st_type;}
+                 | RETURN ICONST SEMI {$$=INT;}
+                 | RETURN STRING_LIT SEMI {$$=STRING;}
+                 | RETURN TRUE SEMI {$$=BOOL;}
+                 | RETURN FALSE SEMI {$$=BOOL;}
+                 ;
 
 %%
 

@@ -1,6 +1,48 @@
 //Return type matches the method definition
 
 //valid
+int funcInt(int num){
+    int two;
+    two = 2*2+2/2;
+
+    return two;
+}
+
+
+//valid
+int funcInt2(int num){
+    return 1;
+}
+
+
+//valid
+bool funcB(int num){
+
+    return true;
+}
+
+
+//valid
+bool funcB2(bool isValid){
+
+    return isValid;
+}
+
+
+//valid
+string funcS(string helloWorld){
+
+    return helloWorld;
+}
+
+
+//valid
+string funcS2(string helloWorld){
+
+    return "helloWorld";
+}
+
+//valid
 int func(){
     int ival;
     ival = 4;
