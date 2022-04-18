@@ -1,3 +1,13 @@
 //Variables, procedures and records are used correctly
 //(they are in scope and used at the correct type) according to the rules
 //described above (in the other tests)
+
+//this should be valid
+
+int func(){
+    int two;
+    two = (2*2)+(2/2);
+
+    return 1;
+}
+

@@ -2,3 +2,28 @@
 //it should test
 //Bad struct usage: LHS of dot in variable reference is not a known
 //struct and RHS is not a field in that struct
+
+struct Book {
+    int price;
+    string title;
+    struct Author author;
+    bool inStock;
+}
+struct Author {
+    string firstName;
+    string lastName;
+}
+
+
+int func(int num){
+
+    struct Book Book1;
+    Book1.price = 100;
+    Book1.title = "Modern Compiler Implementation in Java";
+    Book1.inStock = false;
+    Book1.author.firstName = "Appel";
+    //this should return error
+    Book1.author.lastName = 5;
+
+    return 1;
+}

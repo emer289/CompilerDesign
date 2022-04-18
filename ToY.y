@@ -96,6 +96,18 @@ initialisation: ID ASSIGN arExp SEMI {
     	if (lookup_scope($3->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);
     	printf("got here\n");
     	}
+    | ID FULLSTOP ID ASSIGN arExp SEMI{
+        if ($3->st_type != INT) yyerror(1);
+    }
+    | ID FULLSTOP ID ASSIGN STRING_LIT SEMI{
+        if ($3->st_type != STRING) yyerror(1);
+    }
+    | ID FULLSTOP ID ASSIGN bExp SEMI{
+        if ($3->st_type != BOOL) yyerror(1);
+    }
+    | ID FULLSTOP ID FULLSTOP ID ASSIGN STRING_LIT SEMI{
+        if ($5->st_type != STRING) yyerror(1);
+    }
     ;
 
 
