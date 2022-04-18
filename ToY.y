@@ -1,3 +1,6 @@
+//written by Emer Murphy and Emmet Morrin
+//last edited 18/04/2022
+
 %{
 	#include "ToY.c"
 	#include <stdio.h>
@@ -158,7 +161,11 @@ print: PRINTF LPAREN STRING_LIT RPAREN SEMI |
         PRINTF LPAREN ID RPAREN SEMI { if ($3->st_type != STRING) yyerror(lineno); }
         ;
 
-function_call: ID LPAREN function_call_params RPAREN SEMI {if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) yyerror(lineno);};
+function_call: ID LPAREN function_call_params RPAREN SEMI 
+{
+  if (lookup_scope($1->st_name, MAXTOKENLEN) == NULL) addToFunction($1);
+  
+};
 
 function_call_params: function_call_param | /* empty */ ;
 
@@ -169,22 +176,22 @@ function: function_head function_tail {if ($1 != $2) {yyerror(1);} hide_scope();
   ;
 
 function_head: INT ID 
-		{$2->st_type = INT; addToScope($2); incr_scope();}
+		{$2->st_type = INT; addToScope($2); incr_scope(); removeFunction($2);}
 		LPAREN parameters_optional RPAREN {$$ = INT;}
                |
                STRING ID
-		{$2->st_type = STRING; addToScope($2); incr_scope();}
+		{$2->st_type = STRING; addToScope($2); incr_scope(); removeFunction($2);}
 		LPAREN parameters_optional RPAREN {$$ = STRING;}
                |
                BOOL ID 
-		{$2->st_type = BOOL; addToScope($2); incr_scope();}
+		{$2->st_type = BOOL; addToScope($2); incr_scope(); removeFunction($2);}
 		LPAREN parameters_optional RPAREN {$$ = BOOL;}
                ;
 
 function_tail: LBRACE tail_options return_mandatory RBRACE {$$=$3;};
 
 vfunction_head: VOID ID
-        {$2->st_type = VOID; addToScope($2); incr_scope();}
+        {$2->st_type = VOID; addToScope($2); incr_scope(); removeFunction($2);}
         LPAREN parameters_optional RPAREN {$$ = VOID;};
 
 vfunction_tail: LBRACE tail_options return_optional RBRACE;
@@ -223,6 +230,12 @@ int main (int argc, char *argv[]){
 	yyin = fopen(argv[1], "r");
 	flag = yyparse();
 	fclose(yyin);
+  
+  if (!checkFunctionEmpty()) 
+  {
+    printf("function undeclared\n");
+    yyerror(lineno);
+  }
 
 	printf("VAlID!\n");
 

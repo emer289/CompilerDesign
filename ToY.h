@@ -1,3 +1,7 @@
+//code based on article here: https://steemit.com/utopian-io/@drifter1/writing-a-simple-compiler-on-my-own-combine-flex-and-bison
+//written by Emer Murphy and Emmet Morrin
+//last edited 18/04/2022
+
 /* maximum size of hash table */
 #define SIZE 211
 
@@ -63,6 +67,11 @@ typedef struct ScopeLinkNode{
   struct list_t *listnode;
   struct ScopeLinkNode *next;
 }ScopeLinkNode;
+
+typedef struct FunctionNode {
+  struct FunctionNode *next;
+  struct list_t *func;
+}FunctionNode;
 
 /* the hash table */
 static list_t **hash_table;

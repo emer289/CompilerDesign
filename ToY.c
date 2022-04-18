@@ -1,3 +1,6 @@
+//written by Emer Murphy and Emmet Morrin
+//last edited 18/04/2022
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,6 +8,7 @@
 
 /* current scope */
 struct ScopeNode **cur_scope;
+struct FunctionNode *func_head;
 
 void init_hash_table(){
 	int i;
@@ -12,6 +16,7 @@ void init_hash_table(){
 	for(i = 0; i < SIZE; i++) hash_table[i] = NULL;
 	cur_scope = malloc(sizeof(struct ScopeNode*));
 	(*cur_scope) = malloc(sizeof(struct ScopeNode));
+  func_head = malloc(sizeof(struct FunctionNode));
 }
 
 unsigned int hash(char *key){
@@ -156,6 +161,90 @@ void incr_scope(){ /* go to next scope */
 	struct ScopeNode *newScope = malloc(sizeof(struct ScopeNode));
 	newScope->head = (*cur_scope);
 	(*cur_scope) = newScope;
+}
+
+struct FunctionNode* getFunctionNodeRec(struct FunctionNode* head, struct list_t* func)
+{
+  if (head->func == NULL) return NULL;
+  if (strcmp(head->func->st_name, func->st_name) == 0) return head;
+  if (head->next == NULL) return NULL;
+  return getFunctionNodeRec(head->next, func);
+}
+
+struct FunctionNode* getFunctionNode(struct list_t* func)
+{
+  return getFunctionNodeRec(func_head, func);
+}
+
+void addToFunction(struct list_t* func)
+{
+  printf("adding to function\n");
+  if (getFunctionNode(func) != NULL) return;
+  if (func_head->func == NULL)
+  {
+    func_head->func = func;
+    return;
+  }
+  struct FunctionNode** cur = &func_head;
+  while (1)
+  {
+    if ((*cur)->next == NULL) 
+    {
+      (*cur)->next = malloc(sizeof(struct FunctionNode));
+      (*cur)->next->func = func;
+      printf("added to function\n");
+      break;
+    }
+    cur = &(*cur)->next;
+  }
+}
+
+void removeFunction(struct list_t* func)
+{
+  printf("removing function %s\n", func->st_name);
+  struct FunctionNode** cur = &func_head; // = getFunctionNode(func);
+  struct FunctionNode** prev;
+  while(1)
+  {
+    if ((*cur)->func == NULL) break;
+    if (strcmp((*cur)->func->st_name, func->st_name) == 0) break;
+    if ((*cur)->next == NULL) break;
+    prev = cur;
+    cur = &(*cur)->next;
+  }
+  
+  //printf("loop over\n");
+  
+  if ((*cur)->func != NULL && strcmp((*cur)->func->st_name, func->st_name) == 0)
+  {
+    if ((*prev) == NULL)
+    {
+      if ((*cur)->next == NULL) (*cur)->func = NULL;
+      else (*cur) = (*cur)->next;
+    }
+    else if ((*cur)->next == NULL)
+    {
+      (*prev)->next = NULL;
+    }
+    else
+    {
+      (*prev)->next = (*cur)->next;
+    }
+  }
+  else
+  {
+    return;
+  }
+  
+  printf("removed from function\n");
+}
+
+int checkFunctionEmpty()
+{
+  printf("func head %i\nfunc head %s\n", func_head, func_head->func->st_name);
+  if (func_head == NULL) return 1;
+  if (func_head->func == NULL) return 1;
+  return 0;
 }
 
 /* print to stdout by default */

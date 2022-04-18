@@ -11,9 +11,10 @@ struct Name1 {
 
 int func(int num){
     int two;
-    two = (2*2)+(2/2);
+    two = 2*2+2/2;
     printf("hello");
-
+    funct();
+    //function();
     int ival;
     ival = 3276;
     string hello;
@@ -40,5 +41,4 @@ void funct(){
 
     return ;
 }
-
 
